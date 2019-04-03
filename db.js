@@ -1,6 +1,6 @@
 const spicedPg = require('spiced-pg');
 
-const db = spicedPg('postgres:spicedling:02mplatz11@localhost:5432/petition');
+const db = spicedPg('postgres:spicedling:postgres@localhost:5432/petition');
 
 
 exports.addCity = function addCity(city, country, description) {

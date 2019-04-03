@@ -1,9 +1,22 @@
 const express = require('express');
 const app = express();
-
-
 const db = require('./db');
 
+var hb = require('express-handlebars');
+app.engine('handlebars', hb());
+app.set('view engine', 'handlebars');
+
+app.use(express.static('./public'));
+
+app.get('/', (req, res) => res.redirect('/projects'));
+
+app.get('/projects', (req, res) =>
+    res.render('welcome', {
+        projects,
+        title: 'Welcome!!1',
+        layout: 'main'
+    })
+);
 //any changes to a db (UPDATE, )
 
 app.post('/petition', (req, res) => {

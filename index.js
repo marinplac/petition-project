@@ -8,14 +8,20 @@ app.set('view engine', 'handlebars');
 
 app.use(express.static('./public'));
 
-app.get('/', (req, res) => res.redirect('/projects'));
+app.get('/', (req, res) => res.redirect('/petition'));
 
-app.get('/projects', (req, res) =>
+app.get('/petition', (req, res) =>
     res.render('welcome', {
-        projects,
-        title: 'Welcome!!1',
+        title: 'Please sign this petition',
         layout: 'main'
     })
+);
+app.get('/thankyou', (req, res) =>
+res.render(
+        'thankyou', {
+            title: 'Thank you for signing this important petition that will change the world.',
+            layout: 'main'
+        })
 );
 //any changes to a db (UPDATE, )
 
@@ -32,7 +38,7 @@ app.post('/petition', (req, res) => {
         })
         .catch(err => {
             console.log('err in addCity:', err);
-        })
+        });
     // how to we query a database from our express server?
 });
 

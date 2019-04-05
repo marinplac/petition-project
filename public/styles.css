@@ -35,3 +35,14 @@ button {
     border: 2px white dotted;
     background-color: #17b978;
 }
+#signatures {
+    width: 300px;
+    height: 80px;
+    background-color: #17b978;
+}
+#image {
+    width: 80px;
+    height: 80px;
+    background-color: #17b978;
+    display: inline;
+}

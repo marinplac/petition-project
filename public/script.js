@@ -14,6 +14,9 @@ function draw(x, y, clicked) {
         ctx.lineTo(x, y);
         ctx.stroke();
     } else {
+        var dataURL = canvas.toDataURL();
+        console.log(dataURL);
+        document.getElementById("signatures").value = dataURL;
         ctx.moveTo(x, y);
     }
 }

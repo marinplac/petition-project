@@ -1,9 +1,16 @@
+
+<img src="/images/smoking-ban-solid.svg" id="image" alt="">
 <p>Cigarette smoke is everywhere you go in Serbia.</br>
 Please sign this petition to ban cigarette smoke in public places.</p>
+{{#if error}}
+    <p>Something went wrong. Please sign again.</p>
+
+{{/if}}
+
 <form class="submitform"  method="post">
-    <input id="firstname" type="text" name="name" value="Name">
-    <input id ="lastname" type="text" name="surname" value="Surname">
-    <input type="hidden" name="signature" value="">
+    <input id="firstname" type="text" name="name" placeholder="Name">
+    <input id ="lastname" type="text" name="surname" placeholder="Surname">
+    <input id="signatures" type="hidden" name="signature" value="">
 
     <canvas id="canvas" width="400" height="100"></canvas>
     <button name="button">SUBMIT</button>

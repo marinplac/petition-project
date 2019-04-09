@@ -19,6 +19,25 @@ exports.getSigned = function getSigned() {
 exports.getSigById = function getSigById(id) {
     let q = "SELECT signature FROM signatures WHERE id = $1";
     let params = [id];
-
     return db.query(q, params);
+};
+exports.getRegister = function getRegister(
+    firstname,
+    lastname,
+    email,
+    password
+) {
+    let q =
+        "INSERT INTO users (firstname, lastname, email, password) VALUES ($1, $2, $3, $4) RETURNING ID";
+    let params = [firstname, lastname, email, password];
+    return db.query(q, params);
+};
+exports.getDBpassword = function getDBpassword(email) {
+    let q = `SELECT password FROM users WHERE email = $1`;
+    let params = [email];
+    return db.query(q, params);
+};
+exports.getLogin = function getLogin() {
+    let q = "SELECT * FROM users";
+    return db.query(q);
 };

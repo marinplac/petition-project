@@ -3,6 +3,7 @@ const app = express();
 const db = require("./utils/db");
 const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
+const bcryptauth = require("./utils/bc");
 
 var hb = require("express-handlebars");
 app.engine("handlebars", hb());
@@ -85,5 +86,52 @@ app.get("/signed", (req, res) => {
         });
     });
 });
+app.get("/register", (req, res) => {
+    res.render("register", {
+        layout: "main"
+    });
+});
+app.post("/register", (req, res) => {
+    console.log("blah", req.body);
+    bcryptauth.hashPassword(req.body.password).then(hash => {
+        db.getRegister(
+            req.body.name,
+            req.body.surname,
+            req.body.email,
+            hash
+        ).then(() => {
+            res.redirect("/petition");
+        });
+    });
+});
+
+app.get("/login", (req, res) => {
+    console.log("blah", req.body);
+
+    res.render("login", {
+        layout: "main"
+    });
+});
+app.post("/login", (req, res) => {
+    db.getDBpassword(req.body.email).then(result => {
+        console.log(result, "result");
+        bcryptauth
+            .checkPassword(req.body.password, result.rows[0].password)
+            .then(check => {
+                console.log(check);
+                if (result == true) {
+                    res.redirect("/signers");
+                } else {
+                    res.render("login", {
+                        layout: "main",
+                    error: "error"
+
+
+            });
+    }
+
+});
+}
+
 
 app.listen(8080, () => console.log("Petition is listening! "));

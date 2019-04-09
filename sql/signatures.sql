@@ -5,5 +5,6 @@ CREATE TABLE signatures(
     firstname VARCHAR (100) NOT NULL,
     lastname VARCHAR (100) NOT NULL,
     signature TEXT,
-created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+user_id INTEGER NOT NULL
     );

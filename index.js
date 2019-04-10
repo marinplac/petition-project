@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
 const bcryptauth = require("./utils/bc");
 
+var userId;
 var hb = require("express-handlebars");
 app.engine("handlebars", hb());
 app.set("view engine", "handlebars");
@@ -18,14 +19,18 @@ app.use(
     })
 );
 
-app.get("/petition", (req, res) =>
-    res.render("welcome", {
-        title: "Please sign this petition",
-        layout: "main"
-    })
-);
+app.get("/petition", (req, res) => {
+    if (req.session.signID) {
+        res.redirect("/thankyou");
+    } else {
+        res.render("welcome", {
+            title: "Please sign this petition",
+            layout: "main"
+        });
+    }
+});
 
-app.get("/", (req, res) => res.redirect("/petition"));
+app.get("/", (req, res) => res.redirect("/register"));
 
 app.get("/thankyou", (req, res) => {
     console.log(req.session, "something");
@@ -49,7 +54,7 @@ app.post("/petition", (req, res) => {
     console.log(req.body);
 
     if (req.body.name && req.body.surname && req.body.signature) {
-        db.addSig(req.body.name, req.body.surname, req.body.signature)
+        db.addSig(req.body.name, req.body.surname, req.body.signature, userId)
             .then(data => {
                 console.log(data);
                 req.session.signID = data.rows[0].id;
@@ -92,26 +97,30 @@ app.get("/register", (req, res) => {
     });
 });
 app.post("/register", (req, res) => {
-    console.log("blah", req.body);
+    req.session = null;
+    console.log("registration", req.body);
     bcryptauth.hashPassword(req.body.password).then(hash => {
-        db.getRegister(
-            req.body.name,
-            req.body.surname,
-            req.body.email,
-            hash
-        ).then(() => {
-            res.redirect("/petition");
-        });
+        db.getRegister(req.body.name, req.body.surname, req.body.email, hash)
+            .then(data => {
+                console.log(data);
+                req.session.userId = data.rows[0].id;
+                //req.session.user_firstname = req.body.name;
+                //req.session.user_lastname = req.body.surname;
+                console.log(req.session, "label");
+                res.redirect("/petition");
+            })
+            .catch(err => {
+                console.log("err in register:", err);
+            });
     });
 });
 
 app.get("/login", (req, res) => {
-    console.log("blah", req.body);
-
     res.render("login", {
         layout: "main"
     });
 });
+
 app.post("/login", (req, res) => {
     db.getDBpassword(req.body.email).then(result => {
         console.log(result, "result");
@@ -124,14 +133,11 @@ app.post("/login", (req, res) => {
                 } else {
                     res.render("login", {
                         layout: "main",
-                    error: "error"
-
-
+                        error: "error"
+                    });
+                }
             });
-    }
-
+    });
 });
-}
-
 
 app.listen(8080, () => console.log("Petition is listening! "));

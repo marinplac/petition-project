@@ -2,10 +2,10 @@ const spicedPg = require("spiced-pg");
 
 const db = spicedPg("postgres:postgres:postgres@localhost:5432/petition");
 
-exports.addSig = function addSig(firstname, lastname, signature, user_id) {
+exports.addSig = function addSig(signature, user_id) {
     let q =
-        "INSERT INTO signatures (firstname, lastname, signature, user_id) VALUES ($1, $2, $3, $4) RETURNING ID";
-    let params = [firstname, lastname, signature, user_id];
+        "INSERT INTO signatures (signature, user_id) VALUES ($1, $2) RETURNING ID";
+    let params = [signature, user_id];
     return db.query(q, params);
 };
 exports.getSigners = function getSigners() {
@@ -40,4 +40,12 @@ exports.getDBpassword = function getDBpassword(email) {
 exports.getLogin = function getLogin() {
     let q = "SELECT * FROM users";
     return db.query(q);
+};
+exports.getProfile = function getProfile(age, city, url, user_id) {
+    let q = `INSERT INTO user_profiles (age, city, url, user_id) VALUES ($1, $2, $3, $4) RETURNING ID`;
+    let params = [age, city, url, user_id];
+    return db.query(q, params);
+};
+exports.getAllSigners = function() {
+    return db.query(`SELECT`);
 };

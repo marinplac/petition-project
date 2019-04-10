@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS user_profiles;
+
+CREATE TABLE user_profiles(
+id SERIAL PRIMARY KEY,
+user_id INTEGER NOT NULL,
+age VARCHAR (100) NOT NULL,
+city VARCHAR (150) NOT NULL,
+url VARCHAR (300) NOT NULL
+);

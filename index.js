@@ -4,6 +4,7 @@ const db = require("./utils/db");
 const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
 const bcryptauth = require("./utils/bc");
+// const csurf = require("csurf");
 
 var userId;
 var hb = require("express-handlebars");
@@ -18,8 +19,10 @@ app.use(
         secret: `Dazed and confused.`
     })
 );
+// app.use(csurf());
 
 app.get("/petition", (req, res) => {
+    console.log(req.session);
     if (req.session.signID) {
         res.redirect("/thankyou");
     } else {
@@ -53,8 +56,8 @@ app.post("/petition", (req, res) => {
     console.log("GET /petition!");
     console.log(req.body);
 
-    if (req.body.name && req.body.surname && req.body.signature) {
-        db.addSig(req.body.name, req.body.surname, req.body.signature, userId)
+    if (req.body.signature) {
+        db.addSig(req.body.signature, req.session.userId)
             .then(data => {
                 console.log(data);
                 req.session.signID = data.rows[0].id;
@@ -73,8 +76,8 @@ app.post("/petition", (req, res) => {
 });
 
 app.get("/signers", (req, res) => {
-    db.getSigners(req.body.name, req.body.surname).then(data => {
-        console.log(data);
+    db.getSigners().then(data => {
+        console.log(data, "big huge label");
         res.render("signers", {
             layout: "main",
             signers: data.rows
@@ -97,17 +100,16 @@ app.get("/register", (req, res) => {
     });
 });
 app.post("/register", (req, res) => {
-    req.session = null;
+    // req.session = null;
     console.log("registration", req.body);
     bcryptauth.hashPassword(req.body.password).then(hash => {
         db.getRegister(req.body.name, req.body.surname, req.body.email, hash)
             .then(data => {
                 console.log(data);
                 req.session.userId = data.rows[0].id;
-                //req.session.user_firstname = req.body.name;
-                //req.session.user_lastname = req.body.surname;
+
                 console.log(req.session, "label");
-                res.redirect("/petition");
+                res.redirect("/profile");
             })
             .catch(err => {
                 console.log("err in register:", err);
@@ -139,5 +141,22 @@ app.post("/login", (req, res) => {
             });
     });
 });
+app.get("/profile", (req, res) => {
+    res.render("profile", {
+        layout: "main"
+    });
+});
+app.post("/profile", (req, res) => {
+    console.log(req.session.userId);
+    db.getProfile(
+        req.body.age,
+        req.body.city,
+        req.body.url,
+        req.session.userId
+    ).then(profile => {
+        console.log(profile, "profile");
+        res.redirect("/petition");
+    });
+});
 
-app.listen(8080, () => console.log("Petition is listening! "));
+app.listen(8080, () => console.log("Petition is listening!"));

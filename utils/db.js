@@ -46,6 +46,24 @@ exports.getProfile = function getProfile(age, city, url, user_id) {
     let params = [age, city, url, user_id];
     return db.query(q, params);
 };
-exports.getAllSigners = function() {
-    return db.query(`SELECT`);
+
+exports.getAllSigners = function getAllSigners() {
+    return db.query(`SELECT signatures.user_id, firstname, lastname, age, city, url
+        FROM signatures
+        LEFT JOIN users
+        ON users.id=signatures.user_id
+        LEFT JOIN user_profiles
+        ON user_profiles.user_id = users.id`);
+};
+exports.selectAllFromCities = function selectAllFromCities(city) {
+    let params = [city];
+    return db.query(
+        `SELECT *
+       FROM signatures
+       LEFT JOIN users
+       ON signatures.user_id = users.id
+       LEFT JOIN user_profiles
+       ON user_profiles.user_id = users.id WHERE LOWER(city) = LOWER($1)`,
+        params
+    );
 };

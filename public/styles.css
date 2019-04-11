@@ -81,3 +81,8 @@ button {
     background-color: #17b978;
     display: inline;
 }
+h1 {
+    font-family: "Raleway", sans-serif;
+    font-size: 25px;
+    color: #17b978;
+}

@@ -1,12 +1,16 @@
 <p>We undersigned demand immediate ban on cigarette smoke in all public areas:</p>
+<img src="/images/smoking-ban-solid.svg" id="image" alt="">
 
 <li>
     {{#signers}}
     <li>
-        {{firstname}}
-        {{lastname}}
+        {{#if url}}
+        <a href="{{url}}">{{firstname}} {{lastname}}</a>
+        {{else}}
+        {{firstname}} {{lastname}}
+        {{/if}}
         {{age}}
-        {{city}}
+        <a href="signers/{{city}}">{{city}}</a>
 
     </li>
 

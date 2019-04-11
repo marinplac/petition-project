@@ -6,7 +6,6 @@ const cookieSession = require("cookie-session");
 const bcryptauth = require("./utils/bc");
 // const csurf = require("csurf");
 
-var userId;
 var hb = require("express-handlebars");
 app.engine("handlebars", hb());
 app.set("view engine", "handlebars");
@@ -76,7 +75,12 @@ app.post("/petition", (req, res) => {
 });
 
 app.get("/signers", (req, res) => {
-    db.getSigners().then(data => {
+    db.getAllSigners(
+        req.body.name,
+        req.body.surname,
+        req.body.age,
+        req.params.city
+    ).then(data => {
         console.log(data, "big huge label");
         res.render("signers", {
             layout: "main",
@@ -84,6 +88,18 @@ app.get("/signers", (req, res) => {
         });
     });
 });
+app.get("/signers/:city", (req, res) => {
+    console.log(req.params.city);
+    db.selectAllFromCities(req.params.city).then(data => {
+        console.log(data);
+        res.render("cities", {
+            layout: "main",
+            // signers: data
+            cities: data.rows
+        });
+    });
+});
+
 app.get("/signed", (req, res) => {
     db.getSigned().then(data => {
         console.log(data.url);
@@ -100,14 +116,12 @@ app.get("/register", (req, res) => {
     });
 });
 app.post("/register", (req, res) => {
-    // req.session = null;
     console.log("registration", req.body);
     bcryptauth.hashPassword(req.body.password).then(hash => {
         db.getRegister(req.body.name, req.body.surname, req.body.email, hash)
             .then(data => {
                 console.log(data);
                 req.session.userId = data.rows[0].id;
-
                 console.log(req.session, "label");
                 res.redirect("/profile");
             })
@@ -151,12 +165,19 @@ app.post("/profile", (req, res) => {
     db.getProfile(
         req.body.age,
         req.body.city,
-        req.body.url,
+        sanitiseUrl(req.body.url),
         req.session.userId
     ).then(profile => {
         console.log(profile, "profile");
         res.redirect("/petition");
     });
 });
+
+function sanitiseUrl(url) {
+    if (url.indexOf("https://") !== 0 || url.indexOf("http://") !== 0) {
+        url = "http://" + url;
+    }
+    return url;
+}
 
 app.listen(8080, () => console.log("Petition is listening!"));

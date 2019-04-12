@@ -1,3 +1,4 @@
+// const redis = require("./redis");
 const express = require("express");
 const app = express();
 const db = require("./utils/db");
@@ -20,8 +21,31 @@ app.use(
 );
 // app.use(csurf());
 
+//just for demo purposes:
+// redis.setex("country", 10, "germany").then(() => {
+//     redis.get("country").then(data => {
+//         console.log("data from redis GET: ", data);
+//     });
+// });
+
+// app.get("/something", (req, res) => {
+//     redis.get("something").then(data => {
+//         if (!data) {
+//             //db query to get the data
+//             db.someQuery().then(results => {
+//                 redis.setex("something", 120, JSON.stringify(results.rows));
+//             });
+//         } else {
+//             res.render("someTemplate", {
+//                 dataFromRedis: data
+//             });
+//         }
+//     });
+// });
+
 app.get("/petition", (req, res) => {
     console.log(req.session);
+
     if (req.session.signID) {
         res.redirect("/thankyou");
     } else {
@@ -94,19 +118,21 @@ app.get("/signers/:city", (req, res) => {
         console.log(data);
         res.render("cities", {
             layout: "main",
-            // signers: data
+
             cities: data.rows
         });
     });
 });
 
 app.get("/signed", (req, res) => {
-    db.getSigned().then(data => {
+    db.getSigned(req.session.signID).then(data => {
         console.log(data.url);
+        console.log(data.rows.length, "labeled data rows");
         res.render("signed", {
-            id: req.session.userid,
+            signature: data.rows[0].signature,
+            id: req.session.userId,
             layout: "main",
-            signed: data.rows
+            signed: data.rows.length
         });
     });
 });
@@ -144,8 +170,17 @@ app.post("/login", (req, res) => {
             .checkPassword(req.body.password, result.rows[0].password)
             .then(check => {
                 console.log(check);
-                if (result == true) {
-                    res.redirect("/signers");
+                if (check == true) {
+                    req.session.userId = result.rows[0].id;
+                    db.checkSig(req.session.userId).then(data => {
+                        console.log(data);
+                        if (data.rows[0].id) {
+                            req.session.signID = data.rows[0].id;
+                            res.redirect("/signed");
+                        } else {
+                            res.redirect("/petition");
+                        }
+                    });
                 } else {
                     res.render("login", {
                         layout: "main",
@@ -179,5 +214,32 @@ function sanitiseUrl(url) {
     }
     return url;
 }
+
+app.get("/profile/edit", (req, res) => {
+    db.editProfile(req.session.userId).then(result => {
+        console.log(result);
+        res.render("edit", {
+            layout: "main",
+            data: result.rows[0]
+        });
+    });
+});
+app.post("/profile/edit", (req, res) => {
+    console.log(req.session, "labeled it");
+    db.sendEditedProfile(
+        req.session.userId,
+        req.body.age,
+        req.body.city,
+        req.body.url
+    ).then(result => {
+        console.log(result, "edited results");
+        res.redirect("/petition");
+    });
+});
+
+app.get("/logout", (req, res) => {
+    req.session = null;
+    res.redirect("/register");
+});
 
 app.listen(8080, () => console.log("Petition is listening!"));

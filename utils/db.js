@@ -67,3 +67,7 @@ exports.selectAllFromCities = function selectAllFromCities(city) {
         params
     );
 };
+exports.editProfile = function editProfile() {
+    return db.query(`SELECT firstname, lastname, email, password, age, city, url
+        `);
+};

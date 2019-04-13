@@ -204,6 +204,16 @@ app.get("/profile", (req, res) => {
         layout: "main"
     });
 });
+function sanitiseUrl(url) {
+    if (
+        url != "" &&
+        url.indexOf("https://", 0) !== 0 &&
+        url.indexOf("http://", 0) !== 0
+    ) {
+        url = "http://" + url;
+    }
+    return url;
+}
 
 app.post("/profile", (req, res) => {
     let url = sanitiseUrl(req.body.url);
@@ -217,17 +227,6 @@ app.post("/profile", (req, res) => {
     );
 });
 
-function sanitiseUrl(url) {
-    if (
-        url != "" &&
-        url.indexOf("https://") !== 0 &&
-        url.indexOf("http://") !== 0
-    ) {
-        url = "http://" + url;
-    }
-    return url;
-}
-
 app.get("/profile/edit", (req, res) => {
     db.editProfile(req.session.userId).then(result => {
         console.log(result);
@@ -239,11 +238,13 @@ app.get("/profile/edit", (req, res) => {
 });
 app.post("/profile/edit", (req, res) => {
     console.log(req.session, "labeled it");
+    let url = sanitiseUrl(req.body.url);
+
     db.sendEditedProfile(
         req.session.userId,
         req.body.age,
         req.body.city,
-        req.body.url
+        url
     ).then(result => {
         console.log(result, "edited results");
         res.redirect("/petition");

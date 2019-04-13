@@ -176,15 +176,20 @@ app.post("/login", (req, res) => {
                 console.log(check);
                 if (check == true) {
                     req.session.userId = result.rows[0].id;
-                    db.checkSig(req.session.userId).then(data => {
-                        console.log(data);
-                        if (data.rows[0].id) {
-                            req.session.signID = data.rows[0].id;
-                            res.redirect("/signed");
-                        } else {
+                    db.checkSig(req.session.userId)
+                        .then(data => {
+                            console.log(data);
+                            if (data.rows[0].id) {
+                                req.session.signID = data.rows[0].id;
+                                res.redirect("/signed");
+                            } else {
+                                res.redirect("/petition");
+                            }
+                        })
+                        .catch(err => {
+                            console.log(err);
                             res.redirect("/petition");
-                        }
-                    });
+                        });
                 } else {
                     res.render("login", {
                         layout: "main",
@@ -199,21 +204,25 @@ app.get("/profile", (req, res) => {
         layout: "main"
     });
 });
+
 app.post("/profile", (req, res) => {
+    let url = sanitiseUrl(req.body.url);
+
     console.log(req.session.userId);
-    db.getProfile(
-        req.body.age,
-        req.body.city,
-        sanitiseUrl(req.body.url),
-        req.session.userId
-    ).then(profile => {
-        console.log(profile, "profile");
-        res.redirect("/petition");
-    });
+    db.getProfile(req.body.age, req.body.city, url, req.session.userId).then(
+        profile => {
+            console.log(profile, "profile");
+            res.redirect("/petition");
+        }
+    );
 });
 
 function sanitiseUrl(url) {
-    if (url.indexOf("https://") !== 0 && url.indexOf("http://") !== 0) {
+    if (
+        url != "" &&
+        url.indexOf("https://") !== 0 &&
+        url.indexOf("http://") !== 0
+    ) {
         url = "http://" + url;
     }
     return url;

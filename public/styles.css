@@ -56,6 +56,15 @@ body {
     height: 50px;
     background-color: #17b978;
 }
+/* #logout {
+    background-color: #17b978;
+    width: 100px;
+    height: 60px;
+    border-radius: 10px;
+    font-family: "Raleway", sans-serif;
+    font-weight: bold;
+    font-stretch: extra-expanded;
+} */
 
 button {
     background-color: #17b978;
@@ -66,6 +75,7 @@ button {
     font-weight: bold;
     font-stretch: extra-expanded;
 }
+
 #canvas {
     border: 2px white dotted;
     background-color: #17b978;

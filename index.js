@@ -239,7 +239,7 @@ app.post("/profile/edit", (req, res) => {
 
 app.get("/logout", (req, res) => {
     req.session = null;
-    res.redirect("/register");
+    res.redirect("/login");
 });
 
 app.listen(8080, () => console.log("Petition is listening!"));

@@ -5,7 +5,7 @@ const db = require("./utils/db");
 const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
 const bcryptauth = require("./utils/bc");
-// const csurf = require("csurf");
+const csurf = require("csurf");
 
 var hb = require("express-handlebars");
 app.engine("handlebars", hb());
@@ -19,8 +19,12 @@ app.use(
         secret: `Dazed and confused.`
     })
 );
-// app.use(csurf());
+app.use(csurf());
 
+app.use(function(req, res, next) {
+    res.locals.csrfToken = req.csrfToken();
+    next();
+});
 //just for demo purposes:
 // redis.setex("country", 10, "germany").then(() => {
 //     redis.get("country").then(data => {

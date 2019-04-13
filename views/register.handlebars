@@ -2,10 +2,10 @@
 <img src="/images/smoking-ban-solid.svg" id="image" alt="">
 
 <form class="registerform"  method="post">
-    <input id="firstname" type="text" name="name" placeholder="name">
-    <input id ="lastname" type="text" name="surname" placeholder="surname">
-    <input id="email" type="text" name="email" placeholder="email">
-    <input id="password" type="password" name="password" placeholder="password">
+    <input id="firstname" required type="text" name="name" placeholder="name">
+    <input id ="lastname" required type="text" name="surname" placeholder="surname">
+    <input id="email" required type="text" name="email" placeholder="email">
+    <input id="password" required type="password" name="password" placeholder="password">
 <button name="button">SIGN UP</button>
     <p> If you're already a member, please <a href="/login"> log in.</a> </p>
     <input type="hidden" name="_csrf" value="{{csrfToken}}">

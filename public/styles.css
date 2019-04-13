@@ -6,11 +6,7 @@ body {
     font-size: 25px;
     color: #17b978;
 }
-/* .submitform {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-} */
+
 #firstname {
     width: 240px;
     height: 50px;
@@ -56,15 +52,6 @@ body {
     height: 50px;
     background-color: #17b978;
 }
-/* #logout {
-    background-color: #17b978;
-    width: 100px;
-    height: 60px;
-    border-radius: 10px;
-    font-family: "Raleway", sans-serif;
-    font-weight: bold;
-    font-stretch: extra-expanded;
-} */
 
 button {
     background-color: #17b978;
@@ -86,10 +73,12 @@ button {
     background-color: #17b978;
 }
 #image {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
+    border-radius: 45px;
     background-color: #17b978;
-    display: inline;
+    position: relative;
+    left: 40%;
 }
 h1 {
     font-family: "Raleway", sans-serif;
